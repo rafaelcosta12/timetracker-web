@@ -15,13 +15,15 @@ function Welcome() {
   const addNote = () => {
     if (input.trim()) {
       if (input.startsWith('/')) {
-        const command = input.slice(1).trim()
+        const inputCommandArray = input.split(' ')
+        const command = inputCommandArray.splice(0, 1)[0].slice(1).trim()
+
         if (command === 'send') {
-          sendToDeepsek()
+          sendToDeepsek(inputCommandArray.join(' '))
           setInput('')
           return
         } else {
-          console.error(`Comando desconhecido: ${command}`)
+          console.error(`Comando desconhecido: ${inputCommandArray}`)
           setInput('')
           return
         }
@@ -77,7 +79,7 @@ function Welcome() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 flex flex-col items-center py-5 px-4 transition-colors duration-300">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-700 flex flex-col items-center py-5 px-4 transition-colors duration-300">
       <GlobalSettingsButton onClick={() => setSettingsOpen(true)} />
       <div className="flex items-center gap-3 mb-4">
         <div className="w-12 h-12 bg-blue-600 dark:bg-blue-800 rounded-full flex items-center justify-center shadow-lg">
@@ -190,7 +192,7 @@ function GlobalSettingsButton({ onClick }: { onClick: () => void }) {
       onClick={onClick}
       aria-label="Abrir configurações"
     >
-      <svg width="24" height="24" fill="none" stroke="currentColor">
+      <svg width="24" height="24" fill="none" stroke="currentColor" className='text-gray-800 dark:text-gray-300'>
         <circle cx="12" cy="12" r="10" strokeWidth="2" />
         <path d="M15.5 12a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0z" strokeWidth="2" />
         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.09a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -238,7 +240,7 @@ function DeepsekResponseModal({ open, onClose, response }: DeepsekResponseModalP
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-      <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6 w-full max-w-3xl relative">
+      <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6 w-full max-w-lg relative">
         <button
           className="absolute top-2 right-2 text-gray-400 hover:text-blue-600"
           onClick={onClose}
