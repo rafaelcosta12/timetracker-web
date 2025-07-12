@@ -8,6 +8,7 @@ export const NotesContainer = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editNoteIdx, setEditNoteIdx] = useState<number | null>(null);
+  const [helpModalOpen, setHelpModalOpen] = useState(false);
 
   useEffect(() => {
     const container = document.querySelector('.notes-container');
@@ -42,11 +43,15 @@ export const NotesContainer = () => {
       if (input.startsWith('/')) {
         const inputCommandArray = input.split(' ');
         const command = inputCommandArray.splice(0, 1)[0].slice(1).trim();
-
-        if (command === 'send') {
+        if (command === 'd') {
           sendToDeepsek(inputCommandArray.join(' '));
           return;
-        } else {
+        }
+        if (command === '?') {
+          setHelpModalOpen(true);
+          return;
+        }
+        else {
           console.error(`Comando desconhecido: ${inputCommandArray}`);
           return;
         }
@@ -88,13 +93,13 @@ export const NotesContainer = () => {
   };
 
   return (
-    <div className='flex items-start justify-center w-full min-h-[80vh]'>
-      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-6 w-full max-w-2xl transition-colors duration-300">
+    <div className='flex items-start justify-center w-full'>
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-6 w-full transition-colors duration-300">
         <div className="max-h-[60vh] overflow-y-auto mb-4 space-y-3 notes-container custom-scrollbar">
           {notes.map((note, idx) => (
             <div key={idx} className="bg-blue-50 dark:bg-gray-800 rounded-md px-3 py-2 shadow-sm space-y-2 hover:bg-blue-100 dark:hover:bg-gray-700 transition-colors" onDoubleClick={() => { setEditNoteIdx(idx); setEditModalOpen(true); }}>
               <div className="text-xs text-blue-400 dark:text-blue-200">{note.dateTime.toLocaleString('pt-BR')}</div>
-              <div className="text-gray-800 dark:text-gray-100 whitespace-pre-line">{note.content}</div>
+              <div className="text-gray-800 dark:text-gray-100 whitespace-pre-line font-[Nunito_Sans]">{note.content}</div>
             </div>
           ))}
           {notes.length === 0 && (
@@ -103,6 +108,7 @@ export const NotesContainer = () => {
         </div>
         <NoteForm addNote={addNote} />
       </div>
+      <HelpModal open={helpModalOpen} onClose={() => setHelpModalOpen(false)} />
       <EditNoteModal
         open={editModalOpen}
         note={editNoteIdx !== null ? notes[editNoteIdx] : null}
@@ -129,3 +135,38 @@ export const NotesContainer = () => {
     </div>
   );
 };
+
+
+export interface HelpModalProps {
+  open: boolean
+  onClose: () => void
+}
+
+export function HelpModal({ open, onClose }: HelpModalProps) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75">
+      <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6 w-full m-5 lg:max-w-5xl relative">
+        <button
+          className="absolute top-2 right-2 text-gray-400 hover:text-blue-600"
+          onClick={onClose}
+          aria-label="Fechar"
+        >
+          <svg width="24" height="24" fill="none" stroke="currentColor">
+            <path d="M6 6l12 12M6 18L18 6" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+        </button>
+        <h2 className="text-lg font-bold mb-4 text-blue-700 dark:text-blue-200">Comandos disponíveis</h2>
+        <ul className="list-disc pl-5 space-y-2 text-gray-800 dark:text-gray-100">
+          <li><span className="font-semibold">/d</span> - Enviar notas para o Deepsek para análise.</li>
+          <li><span className="font-semibold">/?</span> - Abrir este menu de ajuda.</li>
+          <li><span className="font-semibold">Shift + Enter</span> - Inserir uma nova linha sem enviar a nota.</li>
+          <li><span className="font-semibold">Enter</span> - Enviar a nota.</li>
+        </ul>
+        <p className="mt-4 text-gray-600 dark:text-gray-300">
+          Use os comandos acima para interagir com o aplicativo. Você pode enviar suas notas para o Deepsek para obter insights e análises, ou acessar este menu de ajuda a qualquer momento.
+        </p>
+      </div>
+    </div>
+  );
+}

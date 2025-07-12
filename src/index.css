@@ -1,4 +1,5 @@
 @import "tailwindcss";
+
 .custom-scrollbar {
     scrollbar-width: 2px;
     scrollbar-color: #505050 rgba(255, 255, 255, 0); /* thumb color and track color */
