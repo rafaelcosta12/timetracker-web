@@ -25,7 +25,7 @@ export function SettingsModal({ open, onClose }: { open: boolean; onClose: () =>
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75">
-      <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6 w-full max-w-2xl relative">
+      <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl p-[2vh] w-full m-[2vh] relative">
         <button
           className="absolute top-2 right-2 text-gray-400 hover:text-blue-600"
           onClick={onClose}

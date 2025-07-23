@@ -93,11 +93,11 @@ export const NotesContainer = () => {
   };
 
   return (
-    <div className='flex items-start justify-center w-full'>
-      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-6 w-full transition-colors duration-300">
-        <div className="max-h-[60vh] overflow-y-auto mb-4 space-y-3 notes-container custom-scrollbar">
+    <div className='flex items-start justify-center'>
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-[2vh] w-full transition-colors duration-300">
+        <div className="max-h-[70vh] overflow-y-auto mb-[2vh] space-y-[1vh] notes-container custom-scrollbar">
           {notes.map((note, idx) => (
-            <div key={idx} className="bg-blue-50 dark:bg-gray-800 rounded-md px-3 py-2 shadow-sm space-y-2 hover:bg-blue-100 dark:hover:bg-gray-700 transition-colors" onDoubleClick={() => { setEditNoteIdx(idx); setEditModalOpen(true); }}>
+            <div key={idx} className="bg-blue-50 dark:bg-gray-800 rounded-md px-[1vh] py-[1vh] shadow-sm space-y-[0.5vh] hover:bg-blue-100 dark:hover:bg-gray-700 transition-colors" onDoubleClick={() => { setEditNoteIdx(idx); setEditModalOpen(true); }}>
               <div className="text-xs text-blue-400 dark:text-blue-200">{note.dateTime.toLocaleString('pt-BR')}</div>
               <div className="text-gray-800 dark:text-gray-100 whitespace-pre-line font-[Nunito_Sans]">{note.content}</div>
             </div>
@@ -146,7 +146,7 @@ export function HelpModal({ open, onClose }: HelpModalProps) {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75">
-      <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6 w-full m-5 lg:max-w-5xl relative">
+      <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl p-[2vh] w-full m-[2vh] relative">
         <button
           className="absolute top-2 right-2 text-gray-400 hover:text-blue-600"
           onClick={onClose}

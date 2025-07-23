@@ -1,3 +1,4 @@
+import { marked } from 'marked';
 import { useState, useEffect } from 'react';
 
 export interface DeepsekResponseModalProps {
@@ -8,17 +9,15 @@ export interface DeepsekResponseModalProps {
 
 export function DeepsekResponseModal({ open, onClose, response }: DeepsekResponseModalProps) {
   if (!open) return null;
-  const [deepsekResponse, setDeepsekResponse] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (!response) {
-      setDeepsekResponse('');
       setLoading(false);
       return;
     }
     setLoading(true);
-    setDeepsekResponse('');
+
     response
       .then(response => {
         if (!response.ok) {
@@ -28,10 +27,11 @@ export function DeepsekResponseModal({ open, onClose, response }: DeepsekRespons
       })
       .then(data => {
         const modelResponse = data?.choices?.[0]?.message?.content || 'Nenhuma resposta recebida.';
-        setDeepsekResponse(modelResponse);
+        var markdown = marked.parse(modelResponse.replace(/^[\u200B\u200C\u200D\u200E\u200F\uFEFF]/,""), { async: false})
+        document.querySelector('.markdown-body')!.innerHTML = markdown;
       })
       .catch(error => {
-        setDeepsekResponse('Erro ao enviar notas para o Deepsek. Verifique o console para mais detalhes e tente novamente.');
+        alert('Erro ao enviar notas para o Deepsek. Verifique o console para mais detalhes e tente novamente.');
         console.error('Erro ao enviar notas para o Deepsek:', error);
       })
       .finally(() => setLoading(false));
@@ -39,7 +39,7 @@ export function DeepsekResponseModal({ open, onClose, response }: DeepsekRespons
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75">
-      <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6 w-full max-w-lg relative">
+      <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl p-[2vh] w-full m-[2vh] relative">
         <button
           className="absolute top-2 right-2 text-gray-400 hover:text-blue-600"
           onClick={onClose}
@@ -49,8 +49,8 @@ export function DeepsekResponseModal({ open, onClose, response }: DeepsekRespons
             <path d="M6 6l12 12M6 18L18 6" strokeWidth="2" strokeLinecap="round" />
           </svg>
         </button>
-        <h2 className="text-lg font-bold mb-4 text-blue-700 dark:text-blue-200">Resposta do Deepsek</h2>
-        <div className="whitespace-pre-line text-gray-800 dark:text-gray-100 max-h-[50vh] overflow-y-auto min-h-[3rem] flex items-center justify-center">
+        <h2 className="text-lg font-bold mb-2 text-blue-700 dark:text-blue-200">Resposta do Deepsek</h2>
+        <div className="whitespace-pre-line text-gray-800 dark:text-gray-100 max-h-[70vh] overflow-y-auto min-h-[3rem]">
           {loading ? (
             <span className="flex items-center gap-2 text-blue-500">
               <svg className="animate-spin h-5 w-5 text-blue-500" viewBox="0 0 24 24">
@@ -69,11 +69,10 @@ export function DeepsekResponseModal({ open, onClose, response }: DeepsekRespons
               </svg>
               Carregando resposta...
             </span>
-          ) : (
-            <div className='md-content dark:bg-gray-800 bg-gray-200 rounded p-4 text-sm overflow-y-auto max-h-[50vh]'>
-              {deepsekResponse || <span className="text-gray-400 dark:text-gray-500">Nenhuma resposta recebida.</span>}
-            </div>
-          )}
+          ) : null}
+          <div style={{all: 'initial'}}>
+            <div className="markdown-body" />
+          </div>
         </div>
       </div>
     </div>
