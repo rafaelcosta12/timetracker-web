@@ -23,8 +23,9 @@ export const NoteForm = (props: { addNote: (input: string) => void; }) => {
   }
 
   return (
-    <div className="grid">
+    <div className="grid h-[13vh]">
       <textarea
+        style={{ resize: 'none' }}
         value={input}
         onChange={e => setInput(e.target.value)}
         autoFocus

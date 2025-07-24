@@ -93,9 +93,9 @@ export const NotesContainer = () => {
   };
 
   return (
-    <div className='flex items-start justify-center'>
+    <div className='flex items-start justify-center fixed top-[7vh] bottom-0 mx-[1vh] w-[96vw]'>
       <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-[2vh] w-full transition-colors duration-300">
-        <div className="max-h-[70vh] overflow-y-auto mb-[2vh] space-y-[1vh] notes-container custom-scrollbar">
+        <div className="max-h-[72vh] min-h-[30vh] overflow-y-auto mb-[2vh] space-y-[1vh] notes-container custom-scrollbar">
           {notes.map((note, idx) => (
             <div key={idx} className="bg-blue-50 dark:bg-gray-800 rounded-md px-[1vh] py-[1vh] shadow-sm space-y-[0.5vh] hover:bg-blue-100 dark:hover:bg-gray-700 transition-colors" onDoubleClick={() => { setEditNoteIdx(idx); setEditModalOpen(true); }}>
               <div className="text-xs text-blue-400 dark:text-blue-200">{note.dateTime.toLocaleString('pt-BR')}</div>
