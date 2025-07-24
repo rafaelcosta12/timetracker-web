@@ -1,10 +1,13 @@
 import { marked } from 'marked';
 import { useState, useEffect } from 'react';
+import type { DeepsekResponse } from './DeepsekResponse';
+import { Loading } from './Loading';
+import type { DeepsekRequestPromise } from './DeepsekRequestPromise';
 
 export interface DeepsekResponseModalProps {
   open: boolean
   onClose: () => void
-  response: Promise<Response> | null
+  response: DeepsekRequestPromise | null,
 }
 
 export function DeepsekResponseModal({ open, onClose, response }: DeepsekResponseModalProps) {
@@ -12,13 +15,14 @@ export function DeepsekResponseModal({ open, onClose, response }: DeepsekRespons
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!response) {
+    if (!response || !response.response) {
       setLoading(false);
       return;
     }
+
     setLoading(true);
 
-    response
+    response.response
       .then(response => {
         if (!response.ok) {
           throw new Error('Erro ao enviar notas para o Deepsek: ' + response.statusText);
@@ -27,8 +31,22 @@ export function DeepsekResponseModal({ open, onClose, response }: DeepsekRespons
       })
       .then(data => {
         const modelResponse = data?.choices?.[0]?.message?.content || 'Nenhuma resposta recebida.';
-        var markdown = marked.parse(modelResponse.replace(/^[\u200B\u200C\u200D\u200E\u200F\uFEFF]/,""), { async: false})
-        document.querySelector('.markdown-body')!.innerHTML = markdown;
+        if (!modelResponse) {
+          throw new Error('Resposta vazia do Deepsek.');
+        }
+        var parsedMarkdown = marked.parse(modelResponse.replace(/^[\u200B\u200C\u200D\u200E\u200F\uFEFF]/,""), { async: false})
+        document.querySelector('.markdown-body')!.innerHTML = parsedMarkdown;
+        
+        setTimeout(() => {
+          var responsesJson = localStorage.getItem('model_responses');
+          const responses: DeepsekResponse[] = responsesJson ? JSON.parse(responsesJson) : [];
+          localStorage.setItem('model_responses', JSON.stringify([{
+            dateTime: new Date(),
+            model: data.model,
+            response: modelResponse,
+            question: response.question,
+          }, ...responses]));
+        }, 100);
       })
       .catch(error => {
         alert('Erro ao enviar notas para o Deepsek. Verifique o console para mais detalhes e tente novamente.');
@@ -52,23 +70,7 @@ export function DeepsekResponseModal({ open, onClose, response }: DeepsekRespons
         <h2 className="text-lg font-bold mb-2 text-blue-700 dark:text-blue-200">Resposta do Deepsek</h2>
         <div className="whitespace-pre-line text-gray-800 dark:text-gray-100 max-h-[70vh] overflow-y-auto min-h-[3rem]">
           {loading ? (
-            <span className="flex items-center gap-2 text-blue-500">
-              <svg className="animate-spin h-5 w-5 text-blue-500" viewBox="0 0 24 24">
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  fill="none" />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-              </svg>
-              Carregando resposta...
-            </span>
+            <Loading text='Carregando resposta...' />
           ) : null}
           <div style={{all: 'initial'}}>
             <div className="markdown-body" />

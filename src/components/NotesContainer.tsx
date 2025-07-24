@@ -3,6 +3,7 @@ import { DeepsekResponseModal } from './DeepsekResponseModal';
 import { EditNoteModal } from './EditNoteModal';
 import { NoteForm } from './NoteForm';
 import type { Note } from './Note';
+import type { DeepsekRequestPromise } from './DeepsekRequestPromise';
 
 export const NotesContainer = () => {
   const [notes, setNotes] = useState<Note[]>([]);
@@ -62,7 +63,7 @@ export const NotesContainer = () => {
     }
   };
 
-  const [deepsekResponse, setDeepsekResponse] = useState<Promise<Response> | null>(null);
+  const [deepsekResponse, setDeepsekResponse] = useState<DeepsekRequestPromise | null>(null);
   const [deepsekModalOpen, setDeepsekModalOpen] = useState(false);
 
   const sendToDeepsek = (message?: string) => {
@@ -74,21 +75,25 @@ export const NotesContainer = () => {
 
     var taskListString = notes.map(i => `${i.dateTime.toLocaleString("pt-BR")}: ${i.content}`).join('\n');
 
-    setDeepsekResponse(fetch("https://api.deepseek.com/chat/completions", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + deepsekKey,
-      },
-      body: JSON.stringify({
-        model: 'deepseek-chat',
-        messages: [
-          { role: 'system', content: localStorage.getItem('assistant_system_message') || '' },
-          { role: 'user', content: 'Aqui estão minhas notas do dia:\n\n' + taskListString },
-          { role: 'user', content: message || localStorage.getItem('assistant_defaul_user_message') || '' },
-        ],
+    message = message || localStorage.getItem('assistant_default_user_message') || '';
+    setDeepsekResponse({
+      question: message,
+      response: fetch("https://api.deepseek.com/chat/completions", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + deepsekKey,
+        },
+        body: JSON.stringify({
+          model: 'deepseek-chat',
+          messages: [
+            { role: 'system', content: localStorage.getItem('assistant_system_message') || '' },
+            { role: 'user', content: 'Aqui estão minhas notas do dia:\n\n' + taskListString },
+            { role: 'user', content: message },
+          ],
+        }),
       }),
-    }));
+    });
     setDeepsekModalOpen(true);
   };
 

@@ -1,11 +1,9 @@
 import { useState } from 'react'
 import { NotesContainer } from './NotesContainer'
-import { SettingsModal } from './SettingsModal'
 import { GlobalSettingsButton } from './GlobalSettingsButton'
+import { ListResponsesButton } from './ListResponsesButton'
 
-function Index() {
-  const [settingsOpen, setSettingsOpen] = useState(false)
-  
+function Index() {  
   const Title = () => {
     return (
       <div className='fixed top-[1vh]'> 
@@ -18,10 +16,10 @@ function Index() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-700 flex flex-col items-center px-4 transition-colors duration-300">
-      <GlobalSettingsButton onClick={() => setSettingsOpen(true)} />
+      <GlobalSettingsButton />
+      <ListResponsesButton />
       <Title /> {/* 14vh total */}
       <NotesContainer /> {/* 86vh total */}
-      <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </div>
   )
 }
