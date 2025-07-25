@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { NotesContainer } from './NotesContainer'
 import { GlobalSettingsButton } from './GlobalSettingsButton'
 import { ListResponsesButton } from './ListResponsesButton'
